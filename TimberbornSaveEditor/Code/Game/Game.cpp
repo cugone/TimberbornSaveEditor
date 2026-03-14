@@ -14,6 +14,8 @@
 #include "Engine/Math/Matrix4.hpp"
 #include "Engine/Math/Vector2.hpp"
 
+#include "Engine/Platform/PlatformUtils.hpp"
+#include "Engine/Platform/Win.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 
 #include "Engine/Services/IAppService.hpp"
@@ -24,7 +26,10 @@
 #include "Engine/Game/GameBase.hpp"
 #include "Engine/Game/GameSettings.hpp"
 
+#include <Thirdparty/Imgui/imgui.h>
+
 #include <string>
+
 
 void Game::Initialize() noexcept {
     g_theRenderer->RegisterMaterialsFromFolder(FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameMaterials));
@@ -45,6 +50,21 @@ void Game::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
 
     _ui_camera2D.Update(deltaSeconds);
     _cameraController.Update(deltaSeconds);
+
+    static std::string filename{};
+    ImGui::Begin("Timberton Save Editor");
+    {
+        ImGui::BeginDisabled(true);
+        ImGui::InputText("Filename", &filename);
+        ImGui::EndDisabled();
+        ImGui::SameLine();
+        if(ImGui::Button("...##OFDButton")) {
+            filename = FileDialogs::OpenFile("Timber Files (*.timber)\0*.timber\0All Files (*.*)\0*.*\0\0");
+        }
+    }
+    ImGui::End();
+
+
 }
 
 void Game::Render() const noexcept {
